@@ -1,0 +1,59 @@
+module real_stopwatch(
+    input clk,        // clock
+    input rst,
+    input start,
+    output reg [5:0] sec,
+    output reg [5:0] min
+);
+
+// Clock Divider
+reg [26:0] count;
+reg one_sec_pulse;
+
+parameter MAX_COUNT = 100;   // small value for simulation
+// For FPGA use: 100000000
+
+always @(posedge clk or posedge rst)
+begin
+    if(rst)
+    begin
+        count <= 0;
+        one_sec_pulse <= 0;
+    end
+    else if(count == MAX_COUNT-1)
+    begin
+        count <= 0;
+        one_sec_pulse <= 1;
+    end
+    else
+    begin
+        count <= count + 1;
+        one_sec_pulse <= 0;
+    end
+end
+
+// Stopwatch Counter
+always @(posedge clk or posedge rst)
+begin
+    if(rst)
+    begin
+        sec <= 0;
+        min <= 0;
+    end
+    else if(one_sec_pulse && start)
+    begin
+        if(sec == 59)
+        begin
+            sec <= 0;
+
+            if(min == 59)
+                min <= 0;
+            else
+                min <= min + 1;
+        end
+        else
+            sec <= sec + 1;
+    end
+end
+
+endmodule

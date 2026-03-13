@@ -1,0 +1,34 @@
+module tb_real_stopwatch;
+
+reg clk;
+reg rst;
+reg start;
+wire [5:0] sec;
+wire [5:0] min;
+
+real_stopwatch uut(
+    .clk(clk),
+    .rst(rst),
+    .start(start),
+    .sec(sec),
+    .min(min)
+);
+
+// Clock generation
+always #5 clk = ~clk;
+
+initial
+begin
+    clk = 0;
+    rst = 1;
+    start = 0;
+
+    #20 rst = 0;
+    #20 start = 1;
+
+    #2000;   // simulation time
+
+    $stop;
+end
+
+endmodule
